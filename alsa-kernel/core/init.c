@@ -33,6 +33,10 @@
 #include <sound/control.h>
 #include <sound/info.h>
 
+#ifndef wait_queue_t  
+#define wait_queue_t wait_queue_entry_t
+#endif
+
 /* monitor files for graceful shutdown (hotplug) */
 struct snd_monitor_file {
 	struct file *file;
