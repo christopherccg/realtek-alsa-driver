@@ -34,6 +34,17 @@
 #include <sound/minors.h>
 #include <sound/initval.h>
 #include <linux/kmod.h>
+#include <linux/version.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
+#include <linux/sched/signal.h>
+#endif
+#ifndef wait_queue_t  
+#define wait_queue_t wait_queue_entry_t
+#endif
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 0, 0)
+#include <linux/timekeeping.h>
+#endif 
+#define do_posix_clock_monotonic_gettime(ts) ktime_get_ts(ts)
 
 #if defined(CONFIG_SND_HRTIMER) || defined(CONFIG_SND_HRTIMER_MODULE)
 #define DEFAULT_TIMER_LIMIT 4
@@ -954,7 +965,11 @@ struct snd_timer_system_private {
 	unsigned long correction;
 };
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,15,0)
 static void snd_timer_s_function(unsigned long data)
+#else
+static void snd_timer_s_function(struct timer_list *data)
+#endif    
 {
 	struct snd_timer *timer = (struct snd_timer *)data;
 	struct snd_timer_system_private *priv = timer->private_data;
@@ -1029,9 +1044,13 @@ static int snd_timer_register_system(void)
 		snd_timer_free(timer);
 		return -ENOMEM;
 	}
+	#if LINUX_VERSION_CODE < KERNEL_VERSION(4,15,0)	
 	init_timer(&priv->tlist);
 	priv->tlist.function = snd_timer_s_function;
 	priv->tlist.data = (unsigned long) timer;
+    #else
+    timer_setup(&priv->tlist,snd_timer_s_function,0);
+    #endif
 	timer->private_data = priv;
 	timer->private_free = snd_timer_free_system;
 	return snd_timer_global_register(timer);
