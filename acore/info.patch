@@ -180,7 +180,7 @@
 -		    init_utsname()->release);
 +		    "Advanced Linux Sound Architecture Driver Version "
 +		    CONFIG_SND_VERSION ".\n"
-+		    "Compiled on " __DATE__ " for kernel %s"
++		    "Compiled on  __DATE__  for kernel %s"
 +#ifdef CONFIG_SMP
 +		    " (SMP)"
 +#endif
