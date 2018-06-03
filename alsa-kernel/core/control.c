@@ -29,6 +29,13 @@
 #include <sound/minors.h>
 #include <sound/info.h>
 #include <sound/control.h>
+#include <linux/version.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
+#include <linux/sched/signal.h>
+#endif
+#ifndef wait_queue_t  
+#define wait_queue_t wait_queue_entry_t
+#endif
 
 /* max number of user-defined controls */
 #define MAX_USER_CONTROLS	32
