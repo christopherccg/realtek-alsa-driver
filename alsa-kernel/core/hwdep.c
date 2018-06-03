@@ -30,6 +30,13 @@
 #include <sound/minors.h>
 #include <sound/hwdep.h>
 #include <sound/info.h>
+#include <linux/version.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
+#include <linux/sched/signal.h>
+#endif
+#ifndef wait_queue_t  
+#define wait_queue_t wait_queue_entry_t
+#endif
 
 MODULE_AUTHOR("Jaroslav Kysela <perex@perex.cz>");
 MODULE_DESCRIPTION("Hardware dependent layer");
